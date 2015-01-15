@@ -34,9 +34,15 @@ int main(void)
 	// Enable interrupts
 	sei();
 
+	uint16_t num = 0;
 	for(;;)
 	{
-		Sleep(480);	// approx 62ms at 8MHz
+		display_number(num++);
+
+		uint8_t buttons = GetButtons(PINC, 1);
+		if (buttons & 1)
+			num = 0;
+		Sleep(50);
  	}
 }
 

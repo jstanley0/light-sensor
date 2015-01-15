@@ -10,7 +10,7 @@ ISR(TIMER1_COMPA_vect)
 {
 	wakeup = 1;
 }
-void Sleep(uint16_t kiloclocks)
+void Sleep_kc(uint16_t kiloclocks)
 {
 	TCCR1A = 0;
 	TCCR1B = 0;				// stop the timer
@@ -54,13 +54,13 @@ uint16_t GetButtons(uint8_t pin, uint8_t mask)
 	}
 
 	if (curState != prevState) {
-		uint8_t pressed = ~prevState & curState;
+		uint8_t pressed = ~prevState & curState & mask;
 		prevState = curState;
 		return pressed;
 	} else if (curState != mask) {
 		// button(s) are being held
 		if (++repeat == REPEAT_THRESHOLD) {
-			return BUTTON_HOLD | ~(curState & mask);
+			return BUTTON_HOLD | (~curState & mask);
 		}
 	} 
 	

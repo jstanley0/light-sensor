@@ -1,6 +1,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <stdlib.h>
+#include <string.h>
 #include "display.h"
 
 const uint8_t digits[10] PROGMEM = {
@@ -59,4 +61,22 @@ ISR(TIMER0_OVF_vect)
 ISR(TIMER0_COMPA_vect)
 {
 	DIGITS_OFF();
+}
+
+// blank-padded, right-aligned, rolling over 10,000
+void display_number(uint16_t num)
+{
+	char buf[6], *p;
+	volatile uint8_t *d;
+	
+	itoa(num, buf, 10);
+	
+	p = &buf[strlen(buf) - 1];
+	d = &display[3];
+	while(p >= buf && d >= display) {
+		*d-- = pgm_read_byte(&digits[*p-- - '0']);
+	}
+	while(d >= display) {
+		*d-- = 0;
+	}
 }
