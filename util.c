@@ -43,7 +43,7 @@ uint16_t GetButtons(uint8_t pin, uint8_t mask)
 	static uint8_t prevState = 0xff;
 	static uint8_t repeat = 0;
 
-	uint8_t curState = (pin & mask);
+	uint8_t curState = (pin & mask); // 1 = not pressed; 0 = pressed
 	
 	// if we've already registered a "hold"
 	if (repeat >= REPEAT_THRESHOLD) {
@@ -54,9 +54,15 @@ uint16_t GetButtons(uint8_t pin, uint8_t mask)
 	}
 
 	if (curState != prevState) {
-		uint8_t pressed = ~prevState & curState & mask;
+		// truth table:
+		//  prev cur  released
+		//  0    0    0
+		//  0    1    1
+		//  1    0    0
+		//  1    1    0
+		uint8_t released = ~prevState & curState & mask;
 		prevState = curState;
-		return pressed;
+		return released;
 	} else if (curState != mask) {
 		// button(s) are being held
 		if (++repeat == REPEAT_THRESHOLD) {

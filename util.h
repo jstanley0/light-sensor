@@ -4,5 +4,6 @@
 #define REPEAT_THRESHOLD 15
 
 void Sleep_kc(uint16_t kiloclocks);
-#define Sleep(ms) Sleep_kc(ms * 8) // eh, not quite
+// note: use constants, so the compiler does this math, not the poor AVR
+#define Sleep(ms) Sleep_kc((int)((ms) * (F_CPU / 1024000.0)))
 uint16_t GetButtons(uint8_t pin, uint8_t mask);
